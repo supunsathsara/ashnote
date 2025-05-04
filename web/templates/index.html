@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AshNote - Burn After Reading</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            color: #e74c3c;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 150px;
+        }
+
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        .result {
+            margin-top: 20px;
+            display: none;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>AshNote 🔥</h1>
+    <p style="text-align: center;">Create encrypted messages that disappear after being read once.</p>
+
+    <div class="container">
+        <div id="messageForm">
+            <div class="form-group">
+                <label for="message">Your Secret Message</label>
+                <textarea id="message" placeholder="Type your secret message here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter a password to encrypt your message">
+            </div>
+            <button id="submit">Create Secret Link</button>
+        </div>
+
+        <div id="result" class="result">
+            <h3>Your Secret Link is Ready:</h3>
+            <p id="secretLink"></p>
+            <p style="margin-top: 15px; font-style: italic;">Share this link with the recipient. They will need the
+                password to decrypt the message. The message will self-destruct after being read once.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 AshNote - Burn After Reading</p>
+    </div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', async () => {
+            const message = document.getElementById('message').value;
+            const password = document.getElementById('password').value;
+
+            if (!message || !password) {
+                alert('Please enter both a message and a password');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('messageForm').style.display = 'none';
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('secretLink').innerHTML = `<a href="${data.url}">${data.url}</a>`;
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+
+</html>
